@@ -21,7 +21,6 @@ class ProductController extends Controller
     
     public function index(Request $request)
     {
-        dd($request->fullUrl());
         try {
             $products = $this->productService->getProductsWithMedias();
             
@@ -44,6 +43,7 @@ class ProductController extends Controller
 
     public function show($id)
     {
+        \Illuminate\Support\Facades\Log::info("Début de la récupération du produit avec l'ID: {$id}");
         try {
             $product = $this->productService->getProductWithMediaUrls($id);
             
@@ -57,6 +57,7 @@ class ProductController extends Controller
                 HttpStatus::OK
             );
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("Erreur lors de la récupération du produit {$id}: " . $e->getMessage() . "\n" . $e->getTraceAsString());
             return ApiResponse::error(
                 'Erreur lors de la récupération du produit: ' . $e->getMessage(),
                 HttpStatus::INTERNAL_SERVER_ERROR

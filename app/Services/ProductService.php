@@ -115,15 +115,24 @@ class ProductService
 
     public function getProductWithMediaUrls($id)
     {
-        $product = $this->getProductById($id);
-        
-        if (!$product) {
-            return null;
+        try {
+            \Illuminate\Support\Facades\Log::info("Récupération du produit {$id} depuis le repository.");
+            $product = $this->getProductById($id);
+            
+            if (!$product) {
+                \Illuminate\Support\Facades\Log::warning("Produit {$id} non trouvé dans le repository.");
+                return null;
+            }
+            
+            \Illuminate\Support\Facades\Log::info("Produit {$id} trouvé. Ajout des URLs des médias.");
+            // Ajouter les URLs publiques des médias
+            $product->media_urls = $this->mediaService->getProductMediaUrls($id);
+            \Illuminate\Support\Facades\Log::info("URLs des médias ajoutées pour le produit {$id}.");
+            
+            return $product;
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("Exception dans getProductWithMediaUrls pour l'ID {$id}: " . $e->getMessage() . "\n" . $e->getTraceAsString());
+            throw $e; // Rethrow pour que le contrôleur puisse la gérer
         }
-        
-        // Ajouter les URLs publiques des médias
-        $product->media_urls = $this->mediaService->getProductMediaUrls($id);
-        
-        return $product;
     }
 }

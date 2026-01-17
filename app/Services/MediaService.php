@@ -197,7 +197,16 @@ class MediaService
      */
     public function getMediaUrl($media)
     {
-        return Storage::url($media->url);
+        try {
+            if (empty($media->url)) {
+                \Illuminate\Support\Facades\Log::warning("URL de média vide pour l'ID de média: {$media->id}");
+                return null; // Ou une URL par défaut
+            }
+            return Storage::url($media->url);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("Erreur lors de la génération de l'URL pour le média ID {$media->id} avec l'URL {$media->url}: " . $e->getMessage() . "\n" . $e->getTraceAsString());
+            return null; // Retourner null ou une URL d'erreur par défaut
+        }
     }
 
     /**
@@ -205,17 +214,26 @@ class MediaService
      */
     public function getProductMediaUrls($productId)
     {
-        $medias = $this->getMediasByProductId($productId);
-        
-        return $medias->map(function ($media) {
-            return [
-                'id' => $media->id,
-                'url' => $this->getMediaUrl($media),
-                'type' => $media->type,
-                'is_principal' => $media->is_principal,
-                'created_at' => $media->created_at
-            ];
-        });
+        try {
+            \Illuminate\Support\Facades\Log::info("Récupération des médias pour le produit ID {$productId}");
+            $medias = $this->getMediasByProductId($productId);
+            \Illuminate\Support\Facades\Log::info(count($medias) . " médias trouvés pour le produit ID {$productId}");
+            
+            $mediaUrls = $medias->map(function ($media) {
+                return [
+                    'id' => $media->id,
+                    'url' => $this->getMediaUrl($media),
+                    'type' => $media->type,
+                    'is_principal' => $media->is_principal,
+                    'created_at' => $media->created_at
+                ];
+            });
+            \Illuminate\Support\Facades\Log::info("Mappage des URLs de médias terminé pour le produit ID {$productId}");
+            return $mediaUrls;
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("Exception dans getProductMediaUrls pour le produit ID {$productId}: " . $e->getMessage() . "\n" . $e->getTraceAsString());
+            throw $e;
+        }
     }
 }
 
