@@ -18,9 +18,7 @@ public function run()
         CategorySeeder::class,
         UserSeeder::class,
         AdminSeeder::class,
-        ShopSeeder::class,
-        ProductSeeder::class,
-        MediaSeeder::class,
+        // ShopSeeder::class,
     ]);
 }
 }

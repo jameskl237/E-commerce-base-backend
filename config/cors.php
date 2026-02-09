@@ -1,5 +1,13 @@
 <?php
 
+$defaultOrigins = 'https://maketushop.com,https://www.maketushop.com,http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173,http://127.0.0.1:3000';
+$rawOrigins = env('CORS_ALLOWED_ORIGINS');
+$originsString = (is_string($rawOrigins) && trim($rawOrigins) !== '') ? $rawOrigins : $defaultOrigins;
+
+$defaultPatterns = '/^https:\\/\\/(.+\\.)?maketushop\\.com$/';
+$rawPatterns = env('CORS_ALLOWED_ORIGINS_PATTERNS');
+$patternsString = (is_string($rawPatterns) && trim($rawPatterns) !== '') ? $rawPatterns : $defaultPatterns;
+
 return [
 
     /*
@@ -19,14 +27,8 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [
-        'https://maketushop.com',
-        'http://localhost:5173',
-        'http://localhost:3000',
-        'http://127.0.0.1:5173',
-        'http://127.0.0.1:3000',
-    ],
-    'allowed_origins_patterns' => [],
+    'allowed_origins' => array_filter(array_map('trim', explode(',', $originsString))),
+    'allowed_origins_patterns' => array_filter(array_map('trim', explode(',', $patternsString))),
 
     'allowed_headers' => ['*'],
 
