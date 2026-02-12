@@ -4,7 +4,7 @@ $defaultOrigins = 'https://maketushop.com,https://www.maketushop.com,http://loca
 $rawOrigins = env('CORS_ALLOWED_ORIGINS');
 $originsString = (is_string($rawOrigins) && trim($rawOrigins) !== '') ? $rawOrigins : $defaultOrigins;
 
-$defaultPatterns = '/^https:\\/\\/(.+\\.)?maketushop\\.com$/';
+$defaultPatterns = '/^https:\\/\\/(.+\\.)?maketushop\\.com$/,/^http:\\/\\/localhost(:\\d+)?$/,/^http:\\/\\/127\\.0\\.0\\.1(:\\d+)?$/';
 $rawPatterns = env('CORS_ALLOWED_ORIGINS_PATTERNS');
 $patternsString = (is_string($rawPatterns) && trim($rawPatterns) !== '') ? $rawPatterns : $defaultPatterns;
 
@@ -32,9 +32,9 @@ return [
 
     'allowed_headers' => ['*'],
 
-    'exposed_headers' => [],
+    'exposed_headers' => ['Authorization', 'X-Requested-With', 'Content-Type', 'Accept', 'Origin'],
 
-    'max_age' => 0,
+    'max_age' => 86400,
 
     'supports_credentials' => true,
 
