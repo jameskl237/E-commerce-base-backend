@@ -12,22 +12,51 @@ class ShopSeeder extends Seeder
 {
     public function run()
     {
-        $cities = ['Yaoundé', 'Douala', 'Bafoussam'];
-        $districts = ['Mokolo', 'Bonamoussadi', 'Ngousso', 'Akwa', 'Melen'];
+        $supplier = User::where('email', 'djielejames@gmail.com')->where('role', 'supplier')->first();
 
-        $suppliers = User::where('role', 'supplier')->get();
+        if (!$supplier) {
+            $this->command->warn('Supplier James Djiele not found. Please run UserSeeder first.');
+            return;
+        }
 
-        foreach ($suppliers as $supplier) {
-            for ($i = 1; $i <= 10; $i++) {
-                Shop::create([
-                    'name' => "Boutique {$i} de {$supplier->name}",
-                    'description' => "Boutique spécialisée à {$cities[array_rand($cities)]}",
-                    'city' => $cities[array_rand($cities)],
-                    'district' => $districts[array_rand($districts)],
-                    'phone' => '237695988879',
-                    'user_id' => $supplier->id,
-                ]);
-            }
+        // Vérifier si les boutiques existent déjà
+        $existingShops = Shop::where('user_id', $supplier->id)->count();
+
+        if ($existingShops >= 2) {
+            $this->command->info('Les boutiques pour James Djiele existent déjà.');
+            return;
+        }
+
+        // Première boutique : Matériel de sport
+        $sportShop = Shop::where('user_id', $supplier->id)
+            ->where('name', 'James Djiele Sport')
+            ->first();
+
+        if (!$sportShop) {
+            Shop::create([
+                'name' => 'J-Sport',
+                'description' => 'Boutique spécialisée dans la vente de matériel de sport de qualité. Équipements pour tous les sports : football, basketball, tennis, fitness et bien plus. Nous proposons des articles de marques reconnues pour répondre à tous vos besoins sportifs.',
+                'city' => 'Yaoundé',
+                'district' => 'Nkoabang',
+                'phone' => $supplier->phone,
+                'user_id' => $supplier->id,
+            ]);
+        }
+
+        // Deuxième boutique : Brocante
+        $brocanteShop = Shop::where('user_id', $supplier->id)
+            ->where('name', 'Brocante-Clift')
+            ->first();
+
+        if (!$brocanteShop) {
+            Shop::create([
+                'name' => 'Brocante-Clift',
+                'description' => 'Brocante spécialisée dans la vente d\'objets anciens, de meubles vintage et d\'articles de collection. Découvrez des pièces uniques et authentiques qui apporteront du caractère à votre intérieur. Nous proposons également des services de restauration et d\'expertise.',
+                'city' => 'Yaoundé',
+                'district' => 'Nkoabang',
+                'phone' => '237690179030',
+                'user_id' => $supplier->id,
+            ]);
         }
     }
 }

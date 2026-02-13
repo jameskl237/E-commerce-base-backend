@@ -12,27 +12,30 @@ class UserSeeder extends Seeder
 {
     public function run()
     {
-        for ($i = 1; $i <= 5; $i++) {
-            $email = "supplier$i@example.com";
-            $user = User::where('email', $email)->first();
-            
-            if ($user) {
-                // Mettre à jour le mot de passe si l'utilisateur existe déjà
-                $user->update([
-                    'password' => Hash::make('password'),
-                ]);
-            } else {
-                // Créer un nouvel utilisateur
-                User::create([
-                    'name' => "Fournisseur $i",
-                    'email' => $email,
-                    'role' => 'supplier',
-                    'password' => Hash::make('password'),
-                    'username' => "supplier$i",
-                    'phone' => '237695988879',
-                    'address' => "Adresse $i",
-                ]);
-            }
+        $email = "djielejames@gmail.com";
+        $user = User::where('email', $email)->first();
+        
+        if ($user) {
+            // Mettre à jour les informations si l'utilisateur existe déjà
+            $user->update([
+                'name' => 'James Djiele',
+                'role' => 'supplier',
+                'password' => Hash::make('ayobo237'),
+                'username' => 'jameskl237',
+                'phone' => '237695988879',
+                'address' => 'yaounde',
+            ]);
+        } else {
+            // Créer un nouvel utilisateur
+            User::create([
+                'name' => 'James Djiele',
+                'email' => $email,
+                'role' => 'supplier',
+                'password' => Hash::make('ayobo237'),
+                'username' => 'jameskl237',
+                'phone' => '237695988879',
+                'address' => 'yaounde',
+            ]);
         }
     }
 }

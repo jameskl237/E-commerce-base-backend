@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Services\ShopService;
+use App\Helpers\ApiResponse;
+use App\Helpers\HttpStatus;
 use Illuminate\Http\Request;
 
 class ShopController extends Controller
@@ -16,9 +18,25 @@ class ShopController extends Controller
 
     public function index()
     {
-        $shops = $this->shopService->getAllShops();
-        return response()->json($shops, 200);
-        // return view('shops.index', compact('shops'));
+        try {
+            $shops = $this->shopService->getAllShops();
+            
+            // S'assurer que $shops est toujours un tableau pour le frontend
+            $shopsArray = $shops instanceof \Illuminate\Support\Collection 
+                ? $shops->toArray() 
+                : (is_array($shops) ? $shops : []);
+            
+            return ApiResponse::success(
+                $shopsArray,
+                'Boutiques récupérées avec succès',
+                HttpStatus::OK
+            );
+        } catch (\Exception $e) {
+            return ApiResponse::error(
+                'Erreur lors de la récupération des boutiques: ' . $e->getMessage(),
+                HttpStatus::INTERNAL_SERVER_ERROR
+            );
+        }
     }
 
     public function show($id)
@@ -27,18 +45,26 @@ class ShopController extends Controller
             $shop = $this->shopService->getShopById($id);
 
             if (!$shop) {
-                return response()->json([
-                    'error' => 'Shop not found'
-                ], 404);
+                return ApiResponse::notFound('Boutique non trouvée');
             }
 
-            return response()->json($shop);
-            // return view('shops.show', compact('shop'));
+            // S'assurer que les produits sont toujours un tableau
+            if ($shop->products instanceof \Illuminate\Support\Collection) {
+                $shop->products = $shop->products->toArray();
+            } elseif (!is_array($shop->products)) {
+                $shop->products = [];
+            }
+
+            return ApiResponse::success(
+                $shop,
+                'Boutique récupérée avec succès',
+                HttpStatus::OK
+            );
         } catch (\Exception $e) {
-            return response()->json([
-                'error' => 'An error occurred while retrieving the shop',
-                'message' => $e->getMessage()
-            ], 500);
+            return ApiResponse::error(
+                'Erreur lors de la récupération de la boutique: ' . $e->getMessage(),
+                HttpStatus::INTERNAL_SERVER_ERROR
+            );
         }
     }
 

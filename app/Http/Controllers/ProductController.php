@@ -21,16 +21,24 @@ class ProductController extends Controller
     
     public function index(Request $request)
     {
-        dd($request->fullUrl());
         try {
             $products = $this->productService->getProductsWithMedias();
             
-            if ($products->isEmpty()) {
-                return ApiResponse::noContent('Aucun produit trouvé');
+            // S'assurer que $products est toujours un tableau pour le frontend
+            $productsArray = $products instanceof \Illuminate\Support\Collection 
+                ? $products->toArray() 
+                : (is_array($products) ? $products : []);
+            
+            if (empty($productsArray)) {
+                return ApiResponse::success(
+                    [],
+                    'Aucun produit trouvé',
+                    HttpStatus::OK
+                );
             }
 
             return ApiResponse::success(
-                $products,
+                $productsArray,
                 'Produits récupérés avec succès',
                 HttpStatus::OK
             );
