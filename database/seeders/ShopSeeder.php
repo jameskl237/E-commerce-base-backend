@@ -29,7 +29,7 @@ class ShopSeeder extends Seeder
 
         // Première boutique : Matériel de sport
         $sportShop = Shop::where('user_id', $supplier->id)
-            ->where('name', 'James Djiele Sport')
+            ->where('name', 'J-Sport')
             ->first();
 
         if (!$sportShop) {
