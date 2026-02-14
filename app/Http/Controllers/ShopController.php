@@ -21,13 +21,9 @@ class ShopController extends Controller
         try {
             $shops = $this->shopService->getAllShops();
             
-            // S'assurer que $shops est toujours un tableau pour le frontend
-            $shopsArray = $shops instanceof \Illuminate\Support\Collection 
-                ? $shops->toArray() 
-                : (is_array($shops) ? $shops : []);
-            
+            // ApiResponse::success() normalise automatiquement les Collections en tableaux
             return ApiResponse::success(
-                $shopsArray,
+                $shops,
                 'Boutiques récupérées avec succès',
                 HttpStatus::OK
             );

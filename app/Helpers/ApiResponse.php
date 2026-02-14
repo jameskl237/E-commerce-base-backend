@@ -8,6 +8,20 @@ class ApiResponse
 {
     public static function success($data = [], string $message = 'Succès', int $status = HttpStatus::OK, array $meta = []): JsonResponse
     {
+        // Normaliser les Collections en tableaux
+        if ($data instanceof \Illuminate\Database\Eloquent\Collection || $data instanceof \Illuminate\Support\Collection) {
+            $data = $data->values()->toArray();
+        } elseif (!is_array($data) && $data !== null) {
+            // Si c'est un objet (modèle Eloquent), le convertir en tableau
+            if (is_object($data) && method_exists($data, 'toArray')) {
+                $data = $data->toArray();
+            } else {
+                $data = [];
+            }
+        } elseif ($data === null) {
+            $data = [];
+        }
+        
         return response()->json([
             'success' => true,
             'message' => $message,

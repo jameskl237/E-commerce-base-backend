@@ -24,21 +24,9 @@ class ProductController extends Controller
         try {
             $products = $this->productService->getProductsWithMedias();
             
-            // S'assurer que $products est toujours un tableau pour le frontend
-            $productsArray = $products instanceof \Illuminate\Support\Collection 
-                ? $products->toArray() 
-                : (is_array($products) ? $products : []);
-            
-            if (empty($productsArray)) {
-                return ApiResponse::success(
-                    [],
-                    'Aucun produit trouvé',
-                    HttpStatus::OK
-                );
-            }
-
+            // ApiResponse::success() normalise automatiquement les Collections en tableaux
             return ApiResponse::success(
-                $productsArray,
+                $products,
                 'Produits récupérés avec succès',
                 HttpStatus::OK
             );

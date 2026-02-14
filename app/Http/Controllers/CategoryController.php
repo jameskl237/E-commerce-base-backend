@@ -26,21 +26,9 @@ class CategoryController extends Controller
         try {
             $categories = $this->categoryService->getAllCategories();
             
-            // S'assurer que $categories est toujours un tableau pour le frontend
-            $categoriesArray = $categories instanceof \Illuminate\Support\Collection 
-                ? $categories->toArray() 
-                : (is_array($categories) ? $categories : []);
-            
-            if (empty($categoriesArray)) {
-                return ApiResponse::success(
-                    [],
-                    'Aucune catégorie trouvée',
-                    HttpStatus::OK
-                );
-            }
-
+            // ApiResponse::success() normalise automatiquement les Collections en tableaux
             return ApiResponse::success(
-                $categoriesArray,
+                $categories,
                 'Catégories récupérées avec succès',
                 HttpStatus::OK
             );
